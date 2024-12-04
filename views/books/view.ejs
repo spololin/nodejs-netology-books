@@ -1,5 +1,5 @@
-<%-include('../layouts/header', {title: title})%>
-<%-include('../layouts/menu')%>
+<%-include("../layouts/header", {title: title})%>
+<%-include("../layouts/menu")%>
 
 <h1><%=title%></h1>
 
@@ -10,7 +10,7 @@
                 <h5 class="card-title"><%=book.title%></h5>
                 <p class="card-text">Описание: <%=book.description%></p>
                 <p class="card-text">Автор: <%=book.authors%></p>
-                <p class="card-text">В избранном: <%=book.favorite === 'true' ? 'да' : 'нет'%></p>
+                <p class="card-text">В избранном: <%=book.favorite === "true" ? "да" : "нет"%></p>
                 <p class="card-text">Обложка: <%=book.fileCover%></p>
                 <p class="card-text">Имя файла: <%=book.fileName%></p>
 
@@ -29,4 +29,4 @@
     </div>
 </div>
 
-<%-include('../layouts/footer')%>
+<%-include("../layouts/footer")%>

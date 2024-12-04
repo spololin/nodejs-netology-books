@@ -7,18 +7,42 @@ const booksApiRouter = require("./routes/api/books");
 const booksRouter = require("./routes/books");
 const indexRouter = require("./routes/index");
 const errorMiddleware = require("./middleware/error");
+const session = require("express-session");
+const passport = require("passport");
+const LocalStrategy = require("passport-local").Strategy;
+const User = require("./models/user");
+const {verify, options} = require("./utils/passport");
+
+passport.use("local", new LocalStrategy(options, verify))
+
+passport.serializeUser((user, cb) => {
+    cb(null, user.id)
+})
+
+passport.deserializeUser( async(id, cb) => {
+    try {
+        const user = await User.findById(id).select("-__v");
+
+        cb(null, user);
+    } catch (e) {
+        return cb(e);
+    }
+})
 
 const app = express();
 
-app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
+
+app.use(express.urlencoded({ extended: true }));
+app.use(session({ secret: "SECRET"}));
+app.use(passport.initialize())
+app.use(passport.session())
 app.use(express.json());
 
 app.use("/", indexRouter);
 app.use("/books", booksRouter);
 app.use("/api/user", userRouter);
 app.use("/api/books", booksApiRouter);
-
 app.use(errorMiddleware);
 
 async function start(port, db) {
