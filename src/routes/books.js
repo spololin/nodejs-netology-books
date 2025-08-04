@@ -1,9 +1,11 @@
-const express = require("express");
-const router = express.Router();
+const router = require("express").Router();
 const Book = require("../models/book");
+const container = require("../../container");
+const BooksRepository = require("../types/book");
 
 router.get("/", async (req, res) => {
-    const books = await Book.find();
+    const repo = container.get(BooksRepository);
+    const books = repo.getBooks();
 
     res.render("books/list", {books, title: "Книги"});
 });
@@ -19,7 +21,10 @@ router.post("/create", async (req, res) => {
     const newBook = new Book({...req.body, favorite: req.body.favorite === "on"});
 
     try {
-        await newBook.save();
+        const repo = container.get(BooksRepository);
+        const book = await repo.createBook(newBook);
+
+        await book.save();
 
         res.redirect("/books");
     } catch (e) {
@@ -30,21 +35,24 @@ router.post("/create", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
     const { id } = req.params;
-    const book = await Book.findById(id);
+    const repo = container.get(BooksRepository);
+    const book = await repo.getBook(id);
 
     res.render("books/view", {book, title: "Данные о книге"});
 });
 
 router.get("/update/:id", async (req, res) => {
     const {id} = req.params;
-    const book = await Book.findById(id);
+    const repo = container.get(BooksRepository);
+    const book = await repo.getBook(id);
 
     res.render("books/update", {book, title: "Редактирование книги"});
 });
 
 router.post("/update/:id", async (req, res) => {
     const { id } = req.params;
-    await Book.findByIdAndUpdate(id, {...req.body, favorite: req.body.favorite === "on"});
+    const repo = container.get(BooksRepository);
+    await repo.updateBook(id, {...req.body, favorite: req.body.favorite === "on"});
 
     res.redirect(`/books/`);
 });
@@ -53,8 +61,9 @@ router.get("/delete/:id", async (req, res) => {
     const {id} = req.params;
 
     try {
-        await Book.deleteOne({_id: id})
-
+        const repo = container.get(BooksRepository);
+        await repo.deleteBook(id);
+        
         res.redirect(`/books/`);
     } catch (e) {
         res.status(500).json(e)
