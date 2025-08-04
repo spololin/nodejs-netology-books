@@ -1,6 +1,6 @@
-import { Container } from "inversify";
+import {Container} from "inversify";
 import "reflect-metadata";
-import BooksRepository from "./src/types/book";
+import {BooksRepository} from "./src/types/book";
 
 const container = new Container();
 container.bind(BooksRepository).toSelf();
