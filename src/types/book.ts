@@ -1,16 +1,16 @@
-import { BookModel } from "../models/book";
+import {BookModel} from "./models/book";
 
-interface IBook {
+export interface IBook {
     readonly title: string;
     readonly authors: string;
     readonly description: string;
-    readonly favorite: string;
+    readonly favorite: boolean;
     readonly fileCover: string;
     readonly fileName: string;
 }
 
-class BooksRepository {
-    abstract createBook(book: IBook): void {
+export class BooksRepository {
+    async createBook(book: IBook): Promise<void> {
         try {
             const newBook = new BookModel(book);
 
@@ -21,21 +21,24 @@ class BooksRepository {
             console.error(e)
         }
     }
-    abstract getBook(id: string): IBook | null {
+
+    async getBook(id: string): Promise<IBook | null> {
         try {
             return await BookModel.findById(id);
         } catch (e) {
             console.error(e)
         }
     }
-    abstract getBooks(): IBook[] {
+
+    async getBooks(): Promise<IBook[]> {
         try {
             return await BookModel.find();
         } catch (e) {
             console.error(e)
         }
     }
-    abstract updateBook(id: number, book: IBook): void {
+
+    async updateBook(id: number, book: IBook): Promise<void> {
         try {
             const foundBook = await BookModel.findById(id);
 
@@ -46,9 +49,10 @@ class BooksRepository {
             console.error(e)
         }
     }
-    abstract deleteBook(id: number): void {
+
+    async deleteBook(id: number): Promise<void> {
         try {
-            await BookModel.deleteOne({ _id: id })
+            await BookModel.deleteOne({_id: id})
         } catch (e) {
             console.error(e)
         }
