@@ -22,6 +22,7 @@ module.exports = defineConfig([{
         globals: {
             ...globals.browser,
             ...globals.commonjs,
+            ...globals.node,
         },
 
         parser: tsParser,
